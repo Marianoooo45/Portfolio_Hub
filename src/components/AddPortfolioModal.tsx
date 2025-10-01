@@ -11,6 +11,7 @@ type Props = {
   onAddPortfolio: () => void;
   onSetDefault?: (p: string) => void;
   totalSelected: number;
+  className?: string;
 };
 
 export default function PortfoliosModal({
@@ -23,27 +24,29 @@ export default function PortfoliosModal({
   onAddPortfolio,
   onSetDefault,
   totalSelected,
+  className,
 }: Props) {
   if (!open) return null;
 
   return (
-    <div className="af-modal">
-      <div className="af-backdrop" onClick={onClose} />
+    <div
+      /* theme */
+      className={`af-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${className ?? ''}`}
+    >
       <div
-        className="af-card af-card--pad af-enter af-panel rounded-2xl"
-        style={{
-          width: 560,
-          background:
-            'linear-gradient(180deg, rgba(10,14,18,.92), rgba(10,14,18,.88))',
-          border: '1px solid rgba(62,82,108,.45)',
-          boxShadow:
-            '0 18px 60px rgba(0,0,0,.6), 0 0 16px rgba(121,183,255,.18)',
-        }}
+        /* theme */
+        className="af-backdrop absolute inset-0 bg-black/70 backdrop-blur-md"
+        onClick={onClose}
+      />
+      <div
+        /* theme */
+        className="relative z-10 af-card af-card--pad af-enter af-panel rounded-2xl bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-amber-900/40 shadow-2xl text-amber-50 w-full max-w-xl"
       >
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-base font-semibold">Portefeuilles</h4>
           <button
-            className="af-btn af-btn--primary af-pill text-sm"
+            /* theme */
+            className="af-btn af-btn--primary af-pill text-sm px-3 py-2 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 text-amber-50 border border-amber-600/40 hover:from-amber-600 hover:to-amber-800 font-medium"
             onClick={onAddPortfolio}
           >
             + Nouveau
@@ -63,13 +66,12 @@ export default function PortfoliosModal({
             allPortfolios.map((p) => (
               <div
                 key={p}
-                className="flex items-center gap-3 px-2 py-2 rounded-lg transition"
-                style={{
-                  background: selected.includes(p)
-                    ? 'rgba(121,183,255,.06)'
-                    : 'transparent',
-                  border: '1px solid rgba(62,82,108,.35)',
-                }}
+                /* theme */
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition ${
+                  selected.includes(p)
+                    ? 'border-amber-600/50 bg-amber-900/20'
+                    : 'border-amber-900/30 bg-slate-900/40 hover:bg-slate-800/40'
+                }`}
               >
                 <input
                   type="checkbox"
@@ -103,7 +105,11 @@ export default function PortfoliosModal({
         </div>
 
         <div className="flex justify-end gap-2 mt-4">
-          <button className="af-btn af-btn--ghost" onClick={onClose}>
+          <button
+            /* theme */
+            className="af-btn af-btn--ghost px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+            onClick={onClose}
+          >
             Fermer
           </button>
         </div>

@@ -1,3 +1,4 @@
+// src/lib/confetti.ts
 // Option 1 : utilise canvas-confetti installé (npm i canvas-confetti)
 export async function fireConfetti(opts?: any) {
   if (typeof window === 'undefined') return;

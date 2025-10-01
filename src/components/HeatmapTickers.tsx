@@ -1,3 +1,4 @@
+// src/components/HeatmapTickers.tsx
 'use client';
 import { motion } from 'framer-motion';
 import type { Position } from '../app/page';

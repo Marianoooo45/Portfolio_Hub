@@ -1,26 +1,443 @@
-@import "tailwindcss";
+/* === SMOKE TEST — doit noircir la page immédiatement === */
+html, body { background:#0b0e13 !important; color:#ecf1f5 !important; }
 
+/* ==========================================================================
+   AETHRA FIN — GLOBALS.CSS
+   Thème sombre élégant (BLEU + BRONZE) pour dashboard financier
+   Tailwind v3+ requis pour @tailwind layers (base/components/utilities)
+   ========================================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   0) TOKENS & RESET — PALETTE BLEU/BRONZE
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Couleurs de fond et lignes */
+  --af-bg:        #0b0e13;   /* fond global */
+  --af-layer:     #0f141b;   /* panneaux */
+  --af-layer-2:   #141b24;   /* hover panneaux */
+  --af-line:      #263244;   /* bordures douces */
+  --af-line-2:    #33445d;   /* bordures fortes */
+
+  /* Texte */
+  --af-text:      #ecf1f5;
+  --af-muted:     #a7b6c7;
+  --af-dim:       #7b8aa0;
+
+  /* Accents BLEU + BRONZE (remplace le vert d’avant) */
+  --af-prim:      #79b7ff;   /* bleu doux */
+  --af-prim-2:    #4f9bff;   /* bleu appuyé */
+  --af-sec:       #c4996c;   /* bronze/chair */
+  --af-sec-2:     #b58456;   /* bronze foncé */
+  --af-gold:      #d7b57a;   /* or léger pour highlights */
+
+  /* Etats */
+  --af-good:      #5dd79d;   /* vert doux pour PnL+ */
+  --af-warn:      #ffb25a;   /* orange doux */
+  --af-bad:       #ff7d78;   /* rouge pastel */
+  --af-info:      #58a6ff;   /* info bleu */
+
+  /* Ombres */
+  --af-shadow:    0 16px 50px rgba(0,0,0,.5);
+  --af-inner:     0 0 0 1px rgba(0,0,0,.35) inset;
+
+  /* Rayons & z-index */
+  --af-r-sm: 10px;
+  --af-r:    14px;
+  --af-r-lg: 18px;
+
+  --z-base: 0;
+  --z-decor: 1;
+  --z-content: 10;
+  --z-sticky: 20;
+  --z-pop: 50;
+  --z-max: 9999;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+:root { color-scheme: dark; }
+html, body, #__next { height: 100%; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply antialiased;
+    background: var(--af-bg);
+    color: var(--af-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--af-prim) 70%, white 30%);
+    color: #051322;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   1) DÉCOR GLOBAL (gradients, grille douce, vignette)
+   ========================================================================== */
+.af-scene {
+  position: fixed; inset: 0; pointer-events: none; z-index: var(--z-decor);
+  background:
+    radial-gradient(900px 600px at 110% -10%, rgba(121,183,255,.12), transparent 60%),
+    radial-gradient(1000px 700px at -10% 10%, rgba(196,153,108,.10), transparent 60%),
+    linear-gradient(180deg, rgba(11,14,19,1) 0%, rgba(15,20,27,1) 100%);
+}
+.af-scene::before {
+  content: ""; position: absolute; inset: -20%;
+  background: conic-gradient(from 0deg at 50% 50%,
+    rgba(121,183,255,.14), rgba(0,0,0,0) 25%,
+    rgba(196,153,108,.14), rgba(0,0,0,0) 50%,
+    rgba(121,183,255,.10), rgba(0,0,0,0) 75%,
+    rgba(196,153,108,.10));
+  filter: blur(80px);
+  animation: af-pan 40s linear infinite;
+  opacity: .55;
+}
+.af-grid {
+  position: fixed; inset: 0; pointer-events: none; z-index: var(--z-decor);
+  background-image:
+    linear-gradient(transparent 0, rgba(255,255,255,.045) 1px),
+    linear-gradient(90deg, transparent 0, rgba(255,255,255,.045) 1px);
+  background-size: 34px 34px, 34px 34px;
+  mask-image: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,1) 40%, transparent 75%);
+  opacity: .22;
+}
+
+/* ==========================================================================
+   2) CONTAINERS & LAYOUT
+   ========================================================================== */
+@layer components {
+  .af-container { @apply mx-auto max-w-7xl px-6 lg:px-8; }
+  .af-shell     { position: relative; z-index: var(--z-content); }
+
+  .af-sticky {
+    position: sticky; top: 0; z-index: var(--z-sticky);
+    backdrop-filter: blur(8px);
+    background: linear-gradient(180deg, rgba(11,14,19,.75), rgba(11,14,19,.45));
+    border-bottom: 1px solid color-mix(in srgb, var(--af-line) 85%, transparent);
+  }
+}
+
+/* ==========================================================================
+   3) PANELS / CARDS — contour néon bleu/bronze partout
+   ========================================================================== */
+.af-card {
+  border-radius: var(--af-r);
+  background: color-mix(in srgb, var(--af-layer) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--af-line) 86%, transparent);
+  box-shadow: var(--af-inner), var(--af-shadow);
+  position: relative;
+}
+.af-card--pad { padding: 1rem; }
+.af-card--hover { transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+.af-card--hover:hover {
+  transform: translateY(-3px);
+  background: color-mix(in srgb, var(--af-layer) 84%, var(--af-layer-2) 16%);
+  box-shadow: 0 22px 60px rgba(0,0,0,.55), 0 0 18px rgba(121,183,255,.18);
+}
+
+/* Contour néon généralisé (même rendu que ta card Cash) */
+.af-card::before,
+.af-pop::before,
+.af-neon-border::before {
+  content:""; position:absolute; inset:-1px; border-radius: inherit; padding:1px;
+  background: linear-gradient(120deg, rgba(121,183,255,.38), rgba(196,153,108,.32));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(121,183,255,.20));
+}
+
+/* KPI */
+.af-kpi-label { font-size: .75rem; color: var(--af-muted); }
+.af-kpi-value { font-size: 1.75rem; font-weight: 700; letter-spacing: -.01em; }
+
+/* ==========================================================================
+   4) BOUTONS / BADGES / FORM INPUTS
+   ========================================================================== */
+.af-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  border-radius: 12px; padding: .5rem .9rem; font-size: .875rem;
+  background: var(--af-layer); color: var(--af-text);
+  border: 1px solid color-mix(in srgb, var(--af-line) 80%, transparent);
+  transition: transform .12s ease, background .2s ease, filter .2s ease, box-shadow .2s ease;
+}
+.af-btn:hover { transform: translateY(-1px); background: var(--af-layer-2); }
+.af-btn:active { transform: translateY(0); }
+.af-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.af-btn--primary {
+  background: linear-gradient(90deg, var(--af-prim), var(--af-sec));
+  color: #0b0e13; border-color: transparent;
+  box-shadow: 0 0 16px rgba(121,183,255,.28);
+}
+.af-btn--ghost {
+  background: transparent; color: var(--af-text);
+  border-color: color-mix(in srgb, var(--af-line) 70%, transparent);
+}
+
+/* Tabs (X/Y/ALL & Toolbar) */
+.af-tab { border-radius: 12px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--af-line) 70%, transparent); }
+.af-tab--active, .af-tab--primary {
+  box-shadow: inset 0 0 0 1px rgba(121,183,255,.35), 0 0 12px rgba(121,183,255,.18);
+}
+
+/* Tags */
+.af-tag {
+  display:inline-flex; align-items:center; gap:.35rem;
+  border-radius: 9999px; padding:.35rem .6rem; font-size:.75rem;
+  background: #121a23;
+  border: 1px solid color-mix(in srgb, var(--af-line) 80%, transparent);
+  color: var(--af-muted);
+}
+.af-tag--gold { background:#17130e; border-color:#6a5130; color: var(--af-gold); }
+.af-tag--good { background:#102017; border-color:#244b33; color:#5dd79d; }
+.af-tag--warn { background:#201810; border-color:#3c2b14; color:#ffcf85; }
+
+/* Inputs */
+.af-input, .af-select, .af-textarea {
+  width: 100%; border-radius: 10px; padding: .55rem .75rem; font-size: .9rem;
+  background: #111825; color: var(--af-text);
+  border: 1px solid color-mix(in srgb, var(--af-line) 78%, transparent);
+  outline: none; transition: box-shadow .15s ease, border-color .15s ease, background .2s ease;
+}
+.af-input:focus, .af-select:focus, .af-textarea:focus {
+  border-color: var(--af-prim-2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--af-prim) 28%, transparent);
+}
+.af-select { appearance: none; background-image: none; }
+
+/* Switch */
+.af-switch {
+  position: relative; width: 44px; height: 26px; border-radius: 9999px;
+  background:#141b24; border:1px solid #2a3a50; transition: background .2s ease; cursor:pointer;
+}
+.af-switch::after {
+  content:""; position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%;
+  background:#e8eef4; transition:left .2s ease, background .2s ease;
+}
+.af-switch.on { background: linear-gradient(90deg, var(--af-prim), var(--af-sec)); }
+.af-switch.on::after { left:20px; background:#ffffff; }
+
+/* ==========================================================================
+   5) TABLES
+   ========================================================================== */
+.af-table-wrap { overflow: hidden; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--af-line) 86%, transparent); }
+.af-table      { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .92rem; }
+.af-thead      { background: color-mix(in srgb, var(--af-layer) 86%, transparent); color: var(--af-muted); }
+.af-th, .af-td { padding: .75rem; }
+.af-tr         { border-top: 1px solid color-mix(in srgb, var(--af-line) 86%, transparent); }
+.af-td--num    { text-align: right; }
+
+/* ==========================================================================
+   6) CHART WRAPPERS
+   ========================================================================== */
+.af-chart {
+  height: 20rem; border-radius: 16px; overflow: hidden; position: relative;
+  background: color-mix(in srgb, var(--af-layer) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--af-line) 86%, transparent);
+}
+.af-chart::before {
+  content:""; position:absolute; inset:-1px; border-radius: inherit; padding:1px;
+  background: linear-gradient(120deg, rgba(121,183,255,.35), rgba(196,153,108,.30));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events:none;
+}
+
+/* ==========================================================================
+   7) TOASTS / MODALS / TOOLTIP
+   ========================================================================== */
+.af-toast {
+  position: fixed; right: 18px; bottom: 18px; z-index: var(--z-max);
+  min-width: 240px; padding: 12px 14px; border-radius: 12px;
+  background: #121a25; border:1px solid #263244; color: var(--af-text);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45); animation: af-toast-in .25s ease-out;
+}
+.af-toast--ok   { border-color:#244b33; box-shadow: 0 12px 40px rgba(93,215,157,.18); }
+.af-toast--warn { border-color:#3c2b14; box-shadow: 0 12px 40px rgba(255,178,90,.18); }
+.af-toast--bad  { border-color:#4a2226; box-shadow: 0 12px 40px rgba(255,125,120,.18); }
+
+.af-modal   { position: fixed; inset: 0; z-index: var(--z-pop); display: grid; place-items: center; }
+.af-backdrop{ position:absolute; inset:0; background: rgba(6,9,14,.75); backdrop-filter: blur(4px); }
+.af-panel   { position:relative; z-index:1; }
+.af-enter   { animation: af-modal-in .22s ease; }
+.af-leave   { animation: af-modal-out .18s ease forwards; }
+
+/* Tooltips */
+.af-tooltip { position: relative; }
+.af-tooltip:hover .af-tip { opacity: 1; transform: translate(-50%, -8px); }
+.af-tip {
+  position: absolute; left: 50%; bottom: calc(100% + 8px);
+  transform: translate(-50%, -2px);
+  background:#111a24; color:#d2dee9; border:1px solid #263244; border-radius:8px;
+  padding:6px 8px; font-size:12px; white-space: nowrap;
+  opacity: 0; transition: .16s ease; pointer-events: none;
+  box-shadow: 0 12px 30px rgba(0,0,0,.4);
+}
+
+/* ==========================================================================
+   8) PROGRESS / SKELETON / LOADERS
+   ========================================================================== */
+.af-progress { width:100%; height:8px; border-radius:9999px; overflow:hidden; background:#152131; border:1px solid #263244; }
+.af-progress--lg { height: 14px; }
+.af-bar {
+  height:100%;
+  background: linear-gradient(90deg, var(--af-prim), var(--af-sec));
+  box-shadow: 0 0 12px rgba(121,183,255,.28);
+}
+
+.af-skeleton { position:relative; overflow:hidden; background:#121a26; border-radius: 10px; }
+.af-skeleton::after {
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  animation: af-shimmer 1.6s infinite;
+}
+
+.af-loader {
+  width:24px; height:24px; border:3px solid #263244; border-top-color: var(--af-prim); border-radius:50%;
+  animation: af-spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   9) LIENS / FOCUS / SCROLLBARS
+   ========================================================================== */
+a { color: color-mix(in srgb, var(--af-text) 82%, var(--af-prim) 18%); }
+a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--af-prim) 70%, white 30%);
+  outline-offset: 2px; border-radius: 10px;
+}
+
+* { scrollbar-width: thin; scrollbar-color: #2a384c #0d141c; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0d141c; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--af-prim), var(--af-sec)); border-radius: 8px;
+}
+
+/* ==========================================================================
+   10) UTILITAIRES AETHRA
+   ========================================================================== */
+@layer utilities {
+  .af-muted { color: var(--af-muted); }
+  .af-dim   { color: var(--af-dim); }
+  .af-prim  { color: var(--af-prim); }
+  .af-sec   { color: var(--af-sec); }
+
+  .af-pill  { border-radius: 9999px; }
+  .af-ring  { box-shadow: 0 0 0 6px color-mix(in srgb, var(--af-prim) 14%, transparent); }
+  .af-shadow{ box-shadow: var(--af-shadow); }
+
+  .af-grid-gap { display:grid; gap: 1.25rem; }
+  .af-row      { display:flex; align-items:center; gap:.75rem; }
+  .af-stack    { display:flex; flex-direction:column; gap:.75rem; }
+
+  /* Popover stylé (pour Portefeuilles) */
+  .af-pop { @apply af-card af-card--pad; border-radius: var(--af-r-lg); }
+}
+
+/* ==========================================================================
+   11) ANIMATIONS
+   ========================================================================== */
+@keyframes af-pan {
+  0%{ transform: rotate(0) scale(1); }
+  50%{ transform: rotate(180deg) scale(1.12); }
+  100%{ transform: rotate(360deg) scale(1); }
+}
+@keyframes af-shimmer { 0%{ transform: translateX(-100%) } 100%{ transform: translateX(100%) } }
+@keyframes af-spin { to { transform: rotate(360deg); } }
+@keyframes af-toast-in { from { opacity:0; transform: translateY(8px) } to { opacity:1; transform: none } }
+@keyframes af-modal-in { from { opacity:0; transform: scale(.96) } to { opacity:1; transform: scale(1) } }
+@keyframes af-modal-out { to { opacity:0; transform: scale(.96) } }
+
+/* ==========================================================================
+   12) RESPONSIVE & REDUCED MOTION
+   ========================================================================== */
+@media (max-width: 640px){
+  .af-container { padding-left: 16px; padding-right: 16px; }
+  .af-progress--lg { height: 12px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .af-scene::before, .af-grid, .af-skeleton::after, .af-loader,
+  .af-enter, .af-leave { animation: none !important; }
+}
+
+/* ==========================================================================
+   13) FALLBACKS LÉGERS
+   ========================================================================== */
+.af-container { margin-left:auto; margin-right:auto; max-width: 80rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+.af-card, .af-chart { border-radius: var(--af-r); border: 1px solid var(--af-line); background: rgba(20,27,36,.92); box-shadow: var(--af-inner), var(--af-shadow); }
+.af-btn { display:inline-flex; align-items:center; gap:.5rem; border-radius:12px; padding:.5rem .9rem; border:1px solid var(--af-line); background: var(--af-layer); color: var(--af-text); }
+.af-card:hover { box-shadow: 0 22px 60px rgba(0,0,0,.55), 0 0 16px rgba(121,183,255,.18), var(--af-inner); }
+tbody tr.af-tr:hover { background: color-mix(in srgb, var(--af-layer) 82%, transparent); }
+/* ===== TOP DOCK (glass gradient + contour néon) ========================= */
+.af-topdock {
+  position: sticky; top: 0; z-index: var(--z-sticky);
+  backdrop-filter: blur(10px) saturate(120%);
+  background: linear-gradient(180deg, rgba(18,22,28,.70), rgba(12,16,22,.45));
+  /* léger dégradé bleu nuit -> bronze dans la couche interne */
+  --_g: linear-gradient(135deg, rgba(121,183,255,.20), rgba(196,153,108,.18));
+  border: 1px solid color-mix(in srgb, var(--af-line) 80%, transparent);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.45);
+}
+.af-topdock::before{
+  content:""; position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
+  background: var(--_g);
+  padding:1px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity:.9; filter: drop-shadow(0 0 10px rgba(121,183,255,.16));
+}
+
+/* boutons dans la topbar: hover/press un peu + vivant */
+.af-topdock .af-btn { transition: transform .15s ease, background .2s ease, box-shadow .2s ease; }
+.af-topdock .af-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.af-topdock .af-btn:active { transform: translateY(0); }
+
+/* ===== POPOVER générique (la "box" Portefeuilles) ====================== */
+.af-pop {
+  background: color-mix(in srgb, var(--af-layer) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--af-line) 86%, transparent);
+  border-radius: 14px; padding: 12px;
+  box-shadow: var(--af-inner), 0 20px 60px rgba(0,0,0,.55);
+  transform-origin: top right;
+  animation: af-pop-in .18s ease-out both;
+}
+@keyframes af-pop-in {
+  from { opacity: 0; transform: translateY(6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* summary (bouton) sans chevron dégueu */
+details > summary::-webkit-details-marker { display:none; }
+details > summary { list-style:none; }
+
+/* ===== FOND ANIMÉ renforcé bleu nuit / bronze ========================= */
+.af-scene{
+  background:
+    radial-gradient(900px 600px at 110% -10%, rgba(121,183,255,.18), transparent 60%),
+    radial-gradient(1000px 700px at -10% 10%, rgba(196,153,108,.16), transparent 60%),
+    radial-gradient(1200px 900px at 50% 130%, rgba(121,183,255,.10), transparent 55%),
+    linear-gradient(180deg, #000 0%, #000 100%);
+}
+.af-scene::before{
+  opacity:.8; filter: blur(90px);
+  animation: af-pan 36s linear infinite;
+}
+
+/* onglets NAV: feedback + brillant léger quand actif */
+.af-tab { transition: box-shadow .2s ease, transform .12s ease; }
+.af-tab:hover { transform: translateY(-1px); }
+.af-tab--active{
+  box-shadow:
+    inset 0 0 0 1px rgba(121,183,255,.35),
+    0 0 14px rgba(196,153,108,.16),
+    0 4px 18px rgba(0,0,0,.35);
 }

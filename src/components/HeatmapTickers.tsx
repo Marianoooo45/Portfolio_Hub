@@ -3,16 +3,20 @@
 import { motion } from 'framer-motion';
 import type { Position } from '../app/page';
 
-export default function HeatmapTickers({ positions, meta }:{
+export default function HeatmapTickers({ positions, meta, className }:{
   positions: Position[];
   meta: Record<string, { name:string; currency?:string; logo?:string }>;
+  className?: string;
 }){
   if (!positions.length) return null;
 
   const max = Math.max(...positions.map(p=>Math.abs(p.pnlPct||0)), .01);
 
   return (
-    <div className="af-card af-card--pad rounded-2xl">
+    <div
+      /* theme */
+      className={`af-card af-card--pad rounded-2xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 backdrop-blur-xl border border-amber-900/20 shadow-2xl p-4 text-amber-50 ${className ?? ''}`}
+    >
       <div className="grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {positions.map((p,i)=>{
           const intensity = Math.min(1, Math.abs(p.pnlPct||0)/max);
@@ -31,7 +35,8 @@ export default function HeatmapTickers({ positions, meta }:{
               </div>
               <div className="flex items-center justify-between mt-2 text-xs">
                 <span className="af-dim">{p.ticker} • {meta[p.ticker]?.currency ?? 'EUR'}</span>
-                <span style={{color: p.pnlPct>=0 ? '#20d895' : '#ff8a8a'}}>{(p.pnlPct*100).toFixed(2)}%</span>
+                /* theme */
+                <span className={p.pnlPct>=0 ? 'text-emerald-400' : 'text-rose-400'}>{(p.pnlPct*100).toFixed(2)}%</span>
               </div>
             </motion.div>
           );

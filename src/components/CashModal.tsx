@@ -5,13 +5,14 @@ import { useState } from 'react';
 export type CashPayload = { portfolio: string; amount: number; note?: string; date: string };
 
 export default function CashModal({
-  open, onClose, onSubmit, portfolios, defaultPortfolio
+  open, onClose, onSubmit, portfolios, defaultPortfolio, className
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (c: CashPayload) => void;
   portfolios: string[];
   defaultPortfolio: string;
+  className?: string;
 }) {
   if (!open) return null;
 
@@ -27,9 +28,19 @@ export default function CashModal({
   const hint  = isDeposit ? 'Entrée de cash' : 'Sortie de cash';
 
   return (
-    <div className="af-modal">
-      <div className="af-backdrop" onClick={onClose}/>
-      <div className="af-card af-card--pad af-enter af-panel rounded-2xl" style={{ width: 640 }}>
+    <div
+      /* theme */
+      className={`af-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${className ?? ''}`}
+    >
+      <div
+        /* theme */
+        className="af-backdrop absolute inset-0 bg-black/70 backdrop-blur-md"
+        onClick={onClose}
+      />
+      <div
+        /* theme */
+        className="relative z-10 af-card af-card--pad af-enter af-panel rounded-2xl bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-amber-900/40 shadow-2xl text-amber-50 w-full max-w-2xl"
+      >
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-base font-semibold">{title}</h4>
           <div className="flex items-center gap-2">
@@ -84,8 +95,20 @@ export default function CashModal({
         <div className="flex items-center justify-between mt-3">
           <span className={`af-tag ${isDeposit ? 'af-tag--good' : 'af-tag--warn'}`}>{hint}</span>
           <div className="flex gap-2">
-            <button className="af-btn af-btn--ghost" onClick={onClose}>Annuler</button>
-            <button className="af-btn af-btn--primary" onClick={()=>onSubmit(form)}>Valider</button>
+            <button
+              /* theme */
+              className="af-btn af-btn--ghost px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+              onClick={onClose}
+            >
+              Annuler
+            </button>
+            <button
+              /* theme */
+              className="af-btn af-btn--primary px-3 py-2 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 text-amber-50 border border-amber-600/40 hover:from-amber-600 hover:to-amber-800 font-medium"
+              onClick={()=>onSubmit(form)}
+            >
+              Valider
+            </button>
           </div>
         </div>
       </div>

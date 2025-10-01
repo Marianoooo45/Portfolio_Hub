@@ -6,7 +6,7 @@ import type { Transaction } from '../app/page';
 type TxSide = 'BUY'|'SELL';
 
 export default function TxModal({
-  open, onClose, onSubmit, mode, initialTicker, portfolios, defaultPortfolio, cashByPortfolio
+  open, onClose, onSubmit, mode, initialTicker, portfolios, defaultPortfolio, cashByPortfolio, className
 }:{
   open:boolean;
   onClose:()=>void;
@@ -16,6 +16,7 @@ export default function TxModal({
   portfolios: string[];
   defaultPortfolio: string;
   cashByPortfolio: Record<string, number>;
+  className?: string;
 }){
   if (!open) return null;
 
@@ -74,9 +75,19 @@ export default function TxModal({
   const buyBlocked = form.side==='BUY' && cost>cash;
 
   return (
-    <div className="af-modal">
-      <div className="af-backdrop" onClick={onClose}/>
-      <div className="af-card af-card--pad af-enter af-panel rounded-2xl" style={{ width: 720 }}>
+    <div
+      /* theme */
+      className={`af-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${className ?? ''}`}
+    >
+      <div
+        /* theme */
+        className="af-backdrop absolute inset-0 bg-black/70 backdrop-blur-md"
+        onClick={onClose}
+      />
+      <div
+        /* theme */
+        className="relative z-10 af-card af-card--pad af-enter af-panel rounded-2xl bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-amber-900/40 shadow-2xl text-amber-50 w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+      >
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-base font-semibold">
             {isEdit ? 'Modifier / Ajouter un trade' : 'Ajouter une position'}
@@ -96,7 +107,10 @@ export default function TxModal({
                 onFocus={()=>{ if (query && !suggest.length) setQuery(query); }}
               />
               {(query && (suggest.length || loading)) && (
-                <div className="absolute left-0 right-0 mt-1 af-card af-card--pad z-[200] max-h-64 overflow-auto rounded-xl">
+                <div
+                  /* theme */
+                  className="absolute left-0 right-0 mt-1 af-card af-card--pad z-[200] max-h-64 overflow-auto rounded-xl bg-gradient-to-br from-slate-900/80 to-slate-950/80 border border-amber-900/40 shadow-xl"
+                >
                   {loading && <div className="af-dim text-sm">Recherche…</div>}
                   {!loading && suggest.map(s=>(
                     <div key={s.symbol} className="flex items-center justify-between p-2 rounded-lg hover:opacity-90 cursor-pointer"
@@ -105,7 +119,12 @@ export default function TxModal({
                         <div className="font-medium">{s.name}</div>
                         <div className="af-dim text-xs">{s.symbol}{s.exchange ? ` • ${s.exchange}`:''}</div>
                       </div>
-                      <button className="af-btn">Choisir</button>
+                      <button
+                        /* theme */
+                        className="af-btn px-3 py-2 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 text-amber-50 border border-amber-600/40 hover:from-amber-600 hover:to-amber-800 font-medium"
+                      >
+                        Choisir
+                      </button>
                     </div>
                   ))}
                   {!loading && !suggest.length && <div className="af-dim text-sm">Aucun résultat.</div>}
@@ -157,7 +176,10 @@ export default function TxModal({
           </label>
         </div>
 
-        <div className="af-card af-card--pad mt-2 rounded-xl">
+        <div
+          /* theme */
+          className="af-card af-card--pad mt-2 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-amber-900/30 shadow-inner"
+        >
           <div className="flex items-center justify-between">
             <div className="af-dim text-sm">Coût/Produit net estimé</div>
             <div className="text-sm font-semibold">
@@ -167,13 +189,33 @@ export default function TxModal({
               ).toLocaleString('fr-FR',{maximumFractionDigits:2})} €
             </div>
           </div>
-          {buyBlocked && <div className="text-sm mt-1" style={{color:'#ff8a8a'}}>Cash insuffisant — ajoute un dépôt.</div>}
+          {buyBlocked && (
+            /* theme */
+            <div className="text-sm mt-1 text-rose-400">Cash insuffisant — ajoute un dépôt.</div>
+          )}
         </div>
 
         <div className="flex justify-end gap-2 mt-3">
-          {isEdit && <button className="af-btn af-btn--ghost" onClick={onClose}>Fermer</button>}
-          <button className="af-btn af-btn--ghost" onClick={onClose}>Annuler</button>
-          <button className="af-btn af-btn--primary" onClick={()=>{
+          {isEdit && (
+            <button
+              /* theme */
+              className="af-btn af-btn--ghost px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+              onClick={onClose}
+            >
+              Fermer
+            </button>
+          )}
+          <button
+            /* theme */
+            className="af-btn af-btn--ghost px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+            onClick={onClose}
+          >
+            Annuler
+          </button>
+          <button
+            /* theme */
+            className="af-btn af-btn--primary px-3 py-2 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 text-amber-50 border border-amber-600/40 hover:from-amber-600 hover:to-amber-800 font-medium"
+            onClick={()=>{
             if (!ticker) { alert('Sélectionne un ticker ou un nom d’entreprise.'); return; }
             onSubmit({ ...form, ticker }, !buyBlocked);
           }}>

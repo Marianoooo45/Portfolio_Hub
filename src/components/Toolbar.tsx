@@ -15,6 +15,7 @@ type Props = {
   onOpenCash: () => void;
   onAddPosition: () => void;
   onAddPortfolio: () => void;
+  className?: string;
 };
 
 export default function Toolbar({
@@ -28,6 +29,7 @@ export default function Toolbar({
   onOpenCash,
   onAddPosition,
   onAddPortfolio,
+  className,
 }: Props) {
   const [showPortfolios, setShowPortfolios] = useState(false);
 
@@ -37,49 +39,54 @@ export default function Toolbar({
   );
 
   return (
-    <header
-      className="af-sticky"
-      style={{
-        background:
-          'linear-gradient(180deg, rgba(6,9,12,.78), rgba(6,9,12,.55))',
-        borderBottom: '1px solid rgba(62,82,108,.35)',
-        backdropFilter: 'blur(10px)',
-      }}
-    >
-      <div className="af-container py-4 flex items-center justify-between">
-        {/* Logo + titre */}
-        <div className="flex items-center gap-3">
+    <header className={`af-sticky ${className ?? ''}`}>
+      <div className="pt-4">
+        <div className="max-w-7xl mx-auto">
           <div
-            className="h-8 w-8 rounded-lg"
-            style={{
-              background: 'linear-gradient(135deg,#79b7ff,#c4996c)',
-              boxShadow:
-                '0 0 18px rgba(121,183,255,.25), 0 0 12px rgba(196,153,108,.18) inset',
-            }}
-          />
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        </div>
-
-        {/* Boutons */}
-        <div className="flex items-center gap-2">
-          <button
-            className="af-btn af-tab"
-            onClick={() => setShowPortfolios(true)}
+            /* theme */
+            className="px-4 py-3 bg-gradient-to-br from-slate-900/70 to-slate-950/70 backdrop-blur-xl rounded-2xl border border-amber-900/30 shadow-2xl flex items-center justify-between"
           >
-            Portefeuilles
-          </button>
+            {/* Logo + titre */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 flex items-center justify-center shadow-amber-900/40 shadow-xl" />
+              <h1 className="text-lg md:text-xl font-bold text-amber-50 tracking-tight">{title}</h1>
+            </div>
 
-          <button className="af-btn" onClick={onRefresh}>
-            Rafraîchir cours
-          </button>
+            {/* Boutons */}
+            <div className="flex items-center gap-2">
+              <button
+                /* theme */
+                className="af-btn af-tab px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+                onClick={() => setShowPortfolios(true)}
+              >
+                Portefeuilles
+              </button>
 
-          <button className="af-btn" onClick={onOpenCash}>
-            Dépôt / Retrait
-          </button>
+              <button
+                /* theme */
+                className="af-btn px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+                onClick={onRefresh}
+              >
+                Rafraîchir cours
+              </button>
 
-          <button className="af-btn af-btn--primary" onClick={onAddPosition}>
-            Ajouter position
-          </button>
+              <button
+                /* theme */
+                className="af-btn px-3 py-2 rounded-xl bg-slate-800/70 border border-amber-900/30 text-amber-100 hover:bg-slate-700/70"
+                onClick={onOpenCash}
+              >
+                Dépôt / Retrait
+              </button>
+
+              <button
+                /* theme */
+                className="af-btn af-btn--primary px-3 py-2 rounded-xl bg-gradient-to-br from-amber-700 to-amber-900 text-amber-50 border border-amber-600/40 hover:from-amber-600 hover:to-amber-800 font-medium"
+                onClick={onAddPosition}
+              >
+                Ajouter position
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

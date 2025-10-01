@@ -1,3 +1,4 @@
+// src/components/PositionsTable.tsx
 'use client';
 import type { Position } from '../app/page';
 

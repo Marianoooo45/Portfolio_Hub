@@ -1,3 +1,4 @@
+// src/components/AddPortfolioModal.tsx
 'use client';
 
 type Props = {

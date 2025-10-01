@@ -1,3 +1,4 @@
+// src/app/api/dividends/route.ts
 import { NextResponse } from 'next/server';
 import yahoo from 'yahoo-finance2';
 

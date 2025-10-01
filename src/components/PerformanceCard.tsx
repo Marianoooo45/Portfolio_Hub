@@ -1,3 +1,4 @@
+// src/components/PerformanceCard.tsx
 'use client';
 
 export default function PerformanceCard({ abs, pct }:{ abs:number; pct:number }){

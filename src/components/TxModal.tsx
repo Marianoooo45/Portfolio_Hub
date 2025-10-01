@@ -1,3 +1,4 @@
+// src/components/TxModal.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import type { Transaction } from '../app/page';

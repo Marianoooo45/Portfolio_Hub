@@ -1,3 +1,4 @@
+// src/components/NavChart.tsx
 'use client';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 

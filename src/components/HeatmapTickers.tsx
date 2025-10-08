@@ -35,7 +35,7 @@ export default function HeatmapTickers({ positions, meta, className }:{
               </div>
               <div className="flex items-center justify-between mt-2 text-xs">
                 <span className="af-dim">{p.ticker} • {meta[p.ticker]?.currency ?? 'EUR'}</span>
-                /* theme */
+                {/* theme */}
                 <span className={p.pnlPct>=0 ? 'text-emerald-400' : 'text-rose-400'}>{(p.pnlPct*100).toFixed(2)}%</span>
               </div>
             </motion.div>

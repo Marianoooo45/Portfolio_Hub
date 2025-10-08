@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import PortfoliosModal from './PortfoliosModal';
+import PortfoliosModal from './AddPortfolioModal'; // <- correspond au fichier fourni
 
 type Props = {
   title: string;

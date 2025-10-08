@@ -27,7 +27,7 @@ export default function DividendsTable({
       </header>
 
       <div className="overflow-hidden rounded-2xl border border-amber-900/30">
-        /* theme */
+        {/* theme */}
         <table className="min-w-full text-sm text-amber-100">
           <thead className="bg-slate-950/70 text-amber-200 text-xs uppercase tracking-wide">
             <tr>
